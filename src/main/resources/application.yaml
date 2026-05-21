@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: DevNotes
+    version: 1.0
+    last-update: 21.06.2026
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+admin:
+  username: ${ADMIN_USERNAME}
+  password: ${ADMIN_PASSWORD}
+app:
+  upload-dir: uploads/images
+  max-image-size: 10MB
+  posts:
+    page-size: 10
+  views-cookie-max-age-seconds: 86400
+  cleanup:
+    draft-images-batch-size: 100
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health, info, metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{0}: %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{0}: %msg%n"
+  file:
+    name: app.log
+  logback:
+    rollingpolicy:
+      file-name-pattern: app.%d{yyyy-MM-dd}.%i.log.gz
+      max-file-size: 10MB
+      max-history: 7
+      total-size-cap: 500MB

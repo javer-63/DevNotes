@@ -1,0 +1,87 @@
+.admin-page h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.edit-page textarea {
+    min-height: 320px;
+    resize: vertical;
+    font-family: JetBrains Mono, monospace;
+}
+
+.posts-page h1 {
+    font-size: 1.6rem;
+    margin-bottom: 1.4rem;
+}
+
+.posts-page .card h2 a {
+    text-decoration: none;
+    color: var(--text-main);
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.posts-page .card h2 a:hover {
+    color: var(--accent);
+}
+
+.posts-page .card p {
+    color: var(--text-muted);
+}
+
+.post-page .post-title {
+    font-size: 2rem;
+    margin-bottom: .6rem;
+}
+
+.post-content {
+    color: #374151;
+    font-size: 1.05rem;
+}
+
+.post-content img {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: var(--shadow-md);
+}
+
+.post-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-page .card {
+    max-width: 420px;
+    width: 100%;
+}
+
+.not-found-page .error-container {
+    text-align: center;
+}
+
+.error-code {
+    font-size: 110px;
+    font-weight: 800;
+    color: var(--accent);
+}
+
+.not-found-page h1 {
+    font-size: 1.8rem;
+}
+
+.not-found-page p {
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: auto;
+}

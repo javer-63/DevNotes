@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Админка</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/core.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/pages.css">
+</head>
+<body class="admin-page">
+<th:block th:replace="~{fragments/header :: header}"/>
+<div class="content-wrapper">
+    <div class="container">
+        <main class="admin-container">
+            <section class="mb-4">
+                <h1>Статистика</h1>
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <div class="stat-label">Всего постов</div>
+                        <div class="stat-value" th:text="${posts}"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Картинок в БД</div>
+                        <div class="stat-value" th:text="${images}"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Файлов на диске</div>
+                        <div class="stat-value" th:text="${imageFiles}"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Суммарный размер (изображения)</div>
+                        <div class="stat-value" th:text="${imageFilesSize}"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-4">
+                <h1 class="mt-4 mb-3">Последний пост</h1>
+                <article class="card p-4" th:if="${lastPost}">
+                    <h2 class="mb-0">
+                        <a th:href="@{'/posts/' + ${lastPost.url}}"
+                           th:text="${lastPost.title}" style="text-decoration: none; color: #0a1620">
+                        </a>
+                    </h2>
+                    <p th:text="${lastPost.description}" class="mt-2 mb-0"></p>
+                </article>
+            </section>
+
+            <section class="mb-4" th:if="${topPosts}">
+                <h1 class="mt-4 mb-3">Топ-5 постов по просмотрам</h1>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center"
+                        th:each="post : ${topPosts}">
+                        <a th:href="@{'/posts/' + ${post.url}}"
+                           th:text="${post.title}" style="text-decoration: none; color: #0a1620">
+                        </a>
+                        <span class="text-muted fst-italic"
+                              th:text="${post.views} + ' просмотров'"></span>
+                    </li>
+                </ul>
+            </section>
+        </main>
+    </div>
+</div>
+<th:block th:replace="~{fragments/footer :: footer}"/>
+</body>
+</html>

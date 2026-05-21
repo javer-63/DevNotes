@@ -1,0 +1,236 @@
+/*components.css*/
+/* ==============================
+   CONTAINERS
+============================== */
+
+.admin-container,
+.post-container,
+.page-container {
+    max-width: 1100px;
+    margin: auto;
+    background: transparent;
+}
+
+/* ==============================
+   CARDS
+============================== */
+
+.card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: 0.25s ease;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* ==============================
+   BUTTONS (IT STYLE)
+============================== */
+
+.btn {
+    border-radius: 5px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-surface);
+    color: var(--text-main);
+    font-weight: 500;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.btn:hover {
+    background: var(--bg-soft);
+    border-color: var(--accent);
+}
+
+.btn-logout {
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.btn-logout:hover {
+    background: #fff1f1;
+    border-color: #ff0000;
+}
+
+/* ==============================
+   FORMS
+============================== */
+
+.form-control {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.55rem 0.7rem;
+    font-family: JetBrains Mono, monospace;
+    font-size: 0.9rem;
+}
+
+.form-control:focus {
+    outline: none;
+    background: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+}
+
+.form-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+}
+
+/* ==============================
+   ADMIN STATS
+============================== */
+
+.admin-stats {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.stat-card {
+    background: var(--bg-surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1.2rem;
+    transition: .25s ease;
+}
+
+.stat-card:hover {
+    border-color: var(--accent);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--text-muted);
+}
+
+.stat-value {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-top: 0.2rem;
+    font-family: JetBrains Mono, monospace;
+}
+
+/* ==============================
+   PAGINATION
+============================== */
+
+.pagination .btn {
+    min-width: 2.4rem;
+    text-align: center;
+}.admin-container,
+ .post-container,
+ .page-container {
+     max-width: 1100px;
+     margin: auto;
+     background: transparent;
+ }
+
+.card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: 0.25s ease;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.btn {
+    border-radius: 5px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-surface);
+    color: var(--text-main);
+    font-weight: 500;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.btn:hover {
+    background: var(--bg-soft);
+    border-color: var(--accent);
+}
+
+.btn-logout {
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.btn-logout:hover {
+    background: #fff1f1;
+    border-color: #ff0000;
+}
+
+.form-control {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.55rem 0.7rem;
+    font-family: JetBrains Mono, monospace;
+    font-size: 0.9rem;
+}
+
+.form-control:focus {
+    outline: none;
+    background: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+}
+
+.form-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+}
+
+.admin-stats {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.stat-card {
+    background: var(--bg-surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1.2rem;
+    transition: .25s ease;
+}
+
+.stat-card:hover {
+    border-color: var(--accent);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--text-muted);
+}
+
+.stat-value {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-top: 0.2rem;
+    font-family: JetBrains Mono, monospace;
+}
+
+.pagination .btn {
+    min-width: 2.4rem;
+    text-align: center;
+}
