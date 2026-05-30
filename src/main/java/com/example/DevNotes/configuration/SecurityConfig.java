@@ -31,7 +31,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/posts", "/posts/", "/posts/**", "/login").permitAll()
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/img/DevNotes.png").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**",
+                                "/DevNotes.png", "/favicon.ico").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .requestMatchers("/admin", "/posts/new", "/posts/*/edit", "/posts/*/delete").hasRole("ADMIN")
