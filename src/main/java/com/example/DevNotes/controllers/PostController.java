@@ -31,14 +31,9 @@ public class PostController {
     @Value("${app.views-cookie-max-age-seconds}")
     private int viewsCookieMaxAgeSeconds;
 
-    @GetMapping
-    public String listFirst(Model model) {
-        return renderPostsPage(1, model);
-    }
-
-    @GetMapping("/page/{page}")
-    public String listPage(@PathVariable int page, Model model) {
-        return renderPostsPage(page, model);
+    @GetMapping({"", "/page/{page}"})
+    public String listPage(@PathVariable(required = false) Integer page, Model model) {
+        return renderPostsPage(page == null ? 1 : page, model);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -114,32 +109,22 @@ public class PostController {
         if (page < 1) {
             return "redirect:/posts";
         }
-
         Page<Post> postsPage = postService.findPage(page - 1, postsPageSize);
-
-        if (page > postsPage.getTotalPages() && postsPage.getTotalPages() > 0) {
+        int totalPages = postsPage.getTotalPages();
+        if (totalPages > 0 && page > totalPages) {
             return "redirect:/posts";
         }
-
         model.addAttribute("posts", postsPage.getContent());
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", postsPage.getTotalPages());
-
-        addPaginationSeoUrls(model, page, postsPage.getTotalPages());
-
+        model.addAttribute("totalPages", totalPages);
+        addPaginationSeoUrls(model, page, totalPages);
         return "posts";
     }
 
     private void addPaginationSeoUrls(Model model, int page, int totalPages) {
         model.addAttribute("canonicalUrl", buildPostsPageUrl(page));
-
-        if (page > 1) {
-            model.addAttribute("prevUrl", buildPostsPageUrl(page - 1));
-        }
-
-        if (totalPages > 0 && page < totalPages) {
-            model.addAttribute("nextUrl", buildPostsPageUrl(page + 1));
-        }
+        model.addAttribute("prevUrl", page > 1 ? buildPostsPageUrl(page - 1) : null);
+        model.addAttribute("nextUrl", page < totalPages ? buildPostsPageUrl(page + 1) : null);
     }
 
     private static String buildPostsPageUrl(int page) {
