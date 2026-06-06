@@ -23,6 +23,11 @@
             </div>
 
             <div class="mb-3">
+                <label class="form-label">Время просмотра (мин)</label>
+                <input type="number" name="time" th:value="${post.time}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
                 <label class="form-label">Описание</label>
                 <input type="text" name="description" th:value="${post.description}" class="form-control" required>
             </div>

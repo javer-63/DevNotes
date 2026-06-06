@@ -58,6 +58,7 @@ public class PostService {
             imageService.deleteImagesFromPost(post, removedImageIds);
         }
         imageService.attachDraftImagesToPost(draftId, post);
+        post.setTime(updated.getTime());
         post.setTitle(updated.getTitle());
         post.setDescription(updated.getDescription());
         post.setContent(updated.getContent());
