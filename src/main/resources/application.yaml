@@ -2,7 +2,7 @@ spring:
   application:
     name: DevNotes
     version: 1.1.0
-    last-update: 09.06.2026
+    last-update: 9.06.2026
   servlet:
     multipart:
       max-file-size: 10MB
