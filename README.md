@@ -1,4 +1,4 @@
-# DevNotes (v1.1.0)
+# DevNotes (v1.1.1)
 
 > ⚙️ **Статус проекта**: активная разработка  
 > Проект находится в стадии активного развития. Новые функции, исправления и улучшения добавляются регулярно.
@@ -23,6 +23,7 @@
 - Отображение списка всех постов и детальной страницы статьи
 - Шаблонизация интерфейса с помощью Thymeleaf
 - Централизованная обработка ошибок и исключений
+- Профили Spring — раздельная конфигурация для разработки и продакшена
 
 ---
 
@@ -34,10 +35,10 @@
 - **Spring MVC** — обработка HTTP-запросов
 - **Spring Security** — управление аутентификацией и авторизацией
 - **Spring Data JPA + Hibernate** — работа с базой данных
-- **PostgreSQL** — реляционная СУБД
+- **PostgreSQL** — реляционная СУБД (продакшен)
+- **H2 Database** — встроенная БД для разработки
 - **Maven** — управление зависимостями и сборка проекта
 - **CI/CD** — автоматический деплой при пуше в GitHub ветку main.
-
 
 ### Frontend
 - **Thymeleaf** — шаблонизатор
@@ -63,7 +64,9 @@ src/
 │   └── resources/
 │       ├── static/                              # Статические ресурсы (CSS, img, JS, TinyMCE)
 │       ├── templates/                           # Шаблоны Thymeleaf
-│       └── application.yml                      # Основной конфигурационный файл Spring
+│       ├── application.yml                      # Основной конфигурационный файл (общие настройки)
+│       ├── application-dev.yml                  # Конфигурация для разработки
+│       └── application-prod.yml                 # Конфигурация для продакшена
 ```
 
 ---
@@ -95,7 +98,7 @@ src/
 
 - **Java 21** или новее
 - **Maven**
-- **PostgreSQL**
+- **PostgreSQL** (только для продакшена)
 
 ---
 
@@ -108,78 +111,70 @@ cd DevNotes
 
 ---
 
-### 3. Создание базы данных
+### 3. Настройка конфигурации
 
-Создайте БД в PostgreSQL:
+Проект использует **профили Spring** для разделения настроек разработки и продакшена.
 
+#### 🔧 Режим разработки (dev)
+
+Для разработки используется встроенная H2 база данных — PostgreSQL не требуется.
+
+Запустите приложение с этим профилем одним из способов:
+
+**Через сборку JAR:**
+```bash
+mvn clean package
+java -jar target/devnotes.jar --spring.profiles.active=dev
+```
+
+**Через Maven:**
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+> В режиме **dev** доступны SQL-логи в консоли и автоматическое создание таблиц (ddl-auto: update)
+
+#### 🚀 Режим продакшена (prod)
+
+Для продакшена требуется PostgreSQL.
+
+1. Создайте базу данных:
 ```sql
 CREATE DATABASE devnotes;
 ```
 
----
-
-### 4. Настройка конфигурации
-
-Откройте файл:
-
-```
-src/main/resources/application.yml
-```
-
-И укажите свои параметры подключения и учётные данные администратора:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/devnotes
-    username: your_db_username
-    password: your_db_password
-
-admin:
-  username: your_admin_login
-  password: your_admin_password
-```
-> ⚠️ Для удобства и безопасности рекомендуется использовать переменные окружения.
-
-Также, для автоматического создания сущностей и таблиц в БД по образу entity-моделей, следует заменить
-```yaml
-  jpa:
-    hibernate:
-      ddl-auto: validate
-```
-на
-```yaml
-  jpa:
-    hibernate:
-      ddl-auto: update
-```
----
-
-### 5. Запуск приложения
-
-#### Вариант A: Через Maven
-
+2. Настройте переменные окружения:
 ```bash
-mvn spring-boot:run
+export DB_URL=jdbc:postgresql://localhost:5432/devnotes
+export DB_USERNAME=your_db_username
+export DB_PASSWORD=your_db_password
+export ADMIN_USERNAME=your_admin_login
+export ADMIN_PASSWORD=your_admin_password
 ```
 
-#### Вариант B: Через сборку JAR
+3. Запустите приложение:
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=prod
+```
 
+Или через JAR:
 ```bash
 mvn clean package
-java -jar target/devnotes.jar
+java -jar target/devnotes.jar --spring.profiles.active=prod
 ```
+
+> ⚠️ В продакшене используется `ddl-auto: validate` — таблицы должны быть созданы заранее.
 
 ---
 
-### 6. Первый вход
+### 4. Первый вход
 
 После запуска откройте в браузере:
 
 - Главная страница: http://localhost:8080
 - Вход в админку: http://localhost:8080/login
 
-Используйте логин и пароль, указанные в `application.yml`.
+Используйте логин и пароль, указанные в переменных окружения `ADMIN_USERNAME` и `ADMIN_PASSWORD`.
 
 ---
 
@@ -188,7 +183,7 @@ java -jar target/devnotes.jar
 Все загруженные изображения сохраняются в директорию:
 
 ```
-/uploads/
+uploads/images/
 ```
 
 Эта папка создаётся автоматически при первом обращении к эндпоинту загрузки (загрузке первого изображения).

@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:devnotes
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+logging:
+  level:
+    com.devnotes: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36}: %msg%n"
