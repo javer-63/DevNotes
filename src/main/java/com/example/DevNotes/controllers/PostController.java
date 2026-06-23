@@ -64,16 +64,7 @@ public class PostController {
     public String view(@PathVariable String url, Model model,
                        HttpServletRequest request, HttpServletResponse response) {
         String cookieName = "post_viewed_" + url;
-        boolean viewed = false;
-
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if (cookieName.equals(cookie.getName())) {
-                    viewed = true;
-                    break;
-                }
-            }
-        }
+        boolean viewed = request.getCookies() != null && Arrays.stream(request.getCookies()).anyMatch(c -> cookieName.equals(c.getName()));
         if (!viewed) {
             postService.incrementViews(url);
             Cookie cookie = new Cookie(cookieName, "true");
@@ -117,45 +108,31 @@ public class PostController {
     }
 
     private String renderPostsPage(int page, Model model) {
-        if (page < 1) {
-            return "redirect:/posts";
-        }
+        if (page < 1) return "redirect:/posts";
+
         Page<Post> postsPage = postService.findPage(page - 1, postsPageSize);
         int totalPages = postsPage.getTotalPages();
-        if (totalPages > 0 && page > totalPages) {
-            return "redirect:/posts";
-        }
+
+        if (totalPages > 0 && page > totalPages) return "redirect:/posts";
+
         model.addAttribute("posts", postsPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
-        addPaginationSeoUrls(model, page, totalPages);
+
+        String base = ServletUriComponentsBuilder.fromCurrentContextPath().path("/posts").toUriString();
+        model.addAttribute("canonicalUrl", base);
+        model.addAttribute("prevUrl", page > 1 ? base : null);
+        model.addAttribute("nextUrl", page < totalPages ? base + "/page/" + (page + 1) : null);
+
         return "posts";
-    }
-
-    private void addPaginationSeoUrls(Model model, int page, int totalPages) {
-        model.addAttribute("canonicalUrl", buildPostsPageUrl(page));
-        model.addAttribute("prevUrl", page > 1 ? buildPostsPageUrl(page - 1) : null);
-        model.addAttribute("nextUrl", page < totalPages ? buildPostsPageUrl(page + 1) : null);
-    }
-
-    private static String buildPostsPageUrl(int page) {
-        UriComponentsBuilder b = ServletUriComponentsBuilder.fromCurrentContextPath().path("/posts");
-        if (page > 1) {
-            b.pathSegment("page", String.valueOf(page));
-        }
-        return b.build().toUriString();
     }
 
     private List<Long> parseIds(String ids) {
         if (ids == null || ids.isBlank()) return List.of();
-        try {
-            return Arrays.stream(ids.split(","))
-                    .map(String::trim)
-                    .filter(s -> !s.isBlank())
-                    .map(Long::parseLong)
-                    .toList();
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException("Некорректный формат removedImageIds");
-        }
+        return Arrays.stream(ids.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(Long::parseLong)
+                .toList();
     }
 }
