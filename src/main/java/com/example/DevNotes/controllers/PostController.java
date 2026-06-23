@@ -41,21 +41,19 @@ public class PostController {
     @GetMapping("/new")
     public String createForm(Model model) {
         model.addAttribute("post", new Post());
-        model.addAttribute("draftId", UUID.randomUUID().toString());
+        model.addAttribute("draftId", postService.generateDraftId());
         return "new-post";
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/new")
     public String create(@Valid @ModelAttribute Post post, BindingResult result,
-                         @RequestParam String draftId, Model model, HttpServletRequest request) {
+                         @RequestParam String draftId, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("draftId", draftId);
             model.addAttribute("errorMessage", result.getFieldError().getDefaultMessage());
             return "new-post";
         }
-        request.setAttribute("post", post);
-        request.setAttribute("draftId", draftId);
         postService.create(post, draftId);
         return "redirect:/posts/" + post.getUrl();
     }
@@ -80,7 +78,7 @@ public class PostController {
     @GetMapping("/{url}/edit")
     public String edit(@PathVariable String url, Model model) {
         model.addAttribute("post", postService.findByUrl(url));
-        model.addAttribute("draftId", UUID.randomUUID().toString());
+        model.addAttribute("draftId", postService.generateDraftId());
         return "edit-post";
     }
 
@@ -96,7 +94,7 @@ public class PostController {
             model.addAttribute("errorMessage", result.getFieldError().getDefaultMessage());
             return "edit-post";
         }
-        postService.update(url, post, draftId, parseIds(removedImageIds));
+        postService.update(url, post, draftId, removedImageIds);
         return "redirect:/posts/" + url;
     }
 
@@ -125,14 +123,5 @@ public class PostController {
         model.addAttribute("nextUrl", page < totalPages ? base + "/page/" + (page + 1) : null);
 
         return "posts";
-    }
-
-    private List<Long> parseIds(String ids) {
-        if (ids == null || ids.isBlank()) return List.of();
-        return Arrays.stream(ids.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .map(Long::parseLong)
-                .toList();
     }
 }

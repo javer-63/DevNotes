@@ -1,6 +1,5 @@
 package com.example.DevNotes.services;
 
-
 import com.example.DevNotes.exceptions.PostAlreadyExistsException;
 import com.example.DevNotes.exceptions.PostNotFoundException;
 import com.example.DevNotes.models.Post;
@@ -13,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -50,16 +51,18 @@ public class PostService {
     }
 
     @Transactional
-    public void update(String url, Post updated, String draftId, List<Long> removedImageIds) {
+    public void update(String url, Post updated, String draftId, String removedImageIds) {
         Post post = findByUrl(url);
-        if (removedImageIds != null && !removedImageIds.isEmpty()) {
-            imageService.deleteImagesFromPost(post, removedImageIds);
+        List<Long> ids = parseIds(removedImageIds);
+        if (!ids.isEmpty()) {
+            imageService.deleteImagesFromPost(post, ids);
         }
         imageService.attachDraftImagesToPost(draftId, post);
         post.setTime(updated.getTime());
         post.setTitle(updated.getTitle());
         post.setDescription(updated.getDescription());
         post.setContent(updated.getContent());
+        postRepo.save(post);
     }
 
     @Transactional
@@ -75,5 +78,18 @@ public class PostService {
             log.warn("Пост с URL {} в базе уже есть", url);
             throw new PostAlreadyExistsException("Пост с URL " + url + " в базе уже есть");
         }
+    }
+
+    private List<Long> parseIds(String ids) {
+        if (ids == null || ids.isBlank()) return List.of();
+        return Arrays.stream(ids.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(Long::parseLong)
+                .toList();
+    }
+
+    public String generateDraftId() {
+        return UUID.randomUUID().toString();
     }
 }
