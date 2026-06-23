@@ -2,6 +2,8 @@ package com.example.DevNotes.repos;
 
 
 import com.example.DevNotes.models.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -18,6 +20,8 @@ public interface PostRepo extends JpaRepository<Post, Long> {
     Optional<Post> findByUrl(String url);
 
     Post findTopByOrderByCreatedAtDesc();
+
+    Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     boolean existsByUrl(String url);
 

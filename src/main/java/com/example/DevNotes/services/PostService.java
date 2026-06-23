@@ -34,7 +34,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public Page<Post> findPage(int page, int size) {
-        return postRepo.findAll(PageRequest.of(page, size));
+        return postRepo.findAllByOrderByCreatedAtDesc(PageRequest.of(page, size));
     }
 
     @Transactional(readOnly = true)
