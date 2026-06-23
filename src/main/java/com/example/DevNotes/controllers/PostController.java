@@ -1,6 +1,7 @@
 package com.example.DevNotes.controllers;
 
-import com.example.DevNotes.exceptions.PostValidationException;
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
 import com.example.DevNotes.models.Post;
 import com.example.DevNotes.services.PostService;
 import jakarta.servlet.http.Cookie;
@@ -46,7 +47,13 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/new")
-    public String create(@ModelAttribute Post post, @RequestParam String draftId, HttpServletRequest request) {
+    public String create(@Valid @ModelAttribute Post post, BindingResult result,
+                         @RequestParam String draftId, Model model, HttpServletRequest request) {
+        if (result.hasErrors()) {
+            model.addAttribute("draftId", draftId);
+            model.addAttribute("errorMessage", result.getFieldError().getDefaultMessage());
+            return "new-post";
+        }
         request.setAttribute("post", post);
         request.setAttribute("draftId", draftId);
         postService.create(post, draftId);
@@ -88,12 +95,16 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{url}/edit")
-    public String edit(@PathVariable String url, @ModelAttribute Post post, @RequestParam String draftId,
-                       @RequestParam(required = false) String removedImageIds, HttpServletRequest request) {
-        request.setAttribute("post", post);
-        request.setAttribute("draftId", draftId);
-        request.setAttribute("removedImageIds", removedImageIds);
-        request.setAttribute("editUrl", url);
+    public String edit(@PathVariable String url, @Valid @ModelAttribute Post post, BindingResult result,
+                       @RequestParam String draftId,
+                       @RequestParam(required = false) String removedImageIds, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("draftId", draftId);
+            model.addAttribute("removedImageIds", removedImageIds);
+            model.addAttribute("editUrl", url);
+            model.addAttribute("errorMessage", result.getFieldError().getDefaultMessage());
+            return "edit-post";
+        }
         postService.update(url, post, draftId, parseIds(removedImageIds));
         return "redirect:/posts/" + url;
     }
@@ -144,7 +155,7 @@ public class PostController {
                     .map(Long::parseLong)
                     .toList();
         } catch (NumberFormatException e) {
-            throw new PostValidationException("Некорректный формат removedImageIds");
+            throw new NumberFormatException("Некорректный формат removedImageIds");
         }
     }
 }

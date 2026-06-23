@@ -3,7 +3,6 @@ package com.example.DevNotes.services;
 
 import com.example.DevNotes.exceptions.PostAlreadyExistsException;
 import com.example.DevNotes.exceptions.PostNotFoundException;
-import com.example.DevNotes.exceptions.PostValidationException;
 import com.example.DevNotes.models.Post;
 import com.example.DevNotes.repos.PostRepo;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,7 @@ public class PostService {
 
     @Transactional
     public void create(Post post, String draftId) {
-        validatePost(post);
+        validateUniqURL(post.getUrl());
         post.setCreatedAt(LocalDateTime.now());
         Post saved = postRepo.save(post);
         log.info("Создан пост с URL {}", saved.getUrl());
@@ -52,7 +51,6 @@ public class PostService {
 
     @Transactional
     public void update(String url, Post updated, String draftId, List<Long> removedImageIds) {
-        validatePost(updated, false);
         Post post = findByUrl(url);
         if (removedImageIds != null && !removedImageIds.isEmpty()) {
             imageService.deleteImagesFromPost(post, removedImageIds);
@@ -72,34 +70,10 @@ public class PostService {
         log.info("Пост с URL {} удален", url);
     }
 
-    private void validatePost(Post post) {
-        validatePost(post, true);
-    }
-
-    private void validatePost(Post post, boolean checkUrl) {
-        validateNotEmpty(post.getTitle(), "Заголовок поста");
-        validateNotEmpty(post.getDescription(), "Описание поста");
-        validateNotEmpty(post.getContent(), "Содержание поста");
-        if (checkUrl) {
-            validateURL(post.getUrl());
-        }
-    }
-
-    private void validateURL(String url) {
+    private void validateUniqURL(String url) {
         if (postRepo.existsByUrl(url)) {
             log.warn("Пост с URL {} в базе уже есть", url);
             throw new PostAlreadyExistsException("Пост с URL " + url + " в базе уже есть");
-        }
-        if (!url.matches("^[a-z0-9-]+$")) {
-            log.warn("URL может содержать только латинские буквы, цифры и тире");
-            throw new PostValidationException("URL может содержать только латинские буквы, цифры и тире");
-        }
-    }
-
-    private void validateNotEmpty(String value, String fieldName) {
-        if (value == null || value.isBlank()) {
-            log.warn("{} не может быть пустым", fieldName);
-            throw new PostValidationException(fieldName + " не может быть пустым");
         }
     }
 }

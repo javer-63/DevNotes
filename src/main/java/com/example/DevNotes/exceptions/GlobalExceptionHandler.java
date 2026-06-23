@@ -18,9 +18,9 @@ public class GlobalExceptionHandler {
         return "post-not-found";
     }
 
-    @ExceptionHandler({ PostValidationException.class, PostAlreadyExistsException.class })
-    public String handlePostFormError(RuntimeException e, Model model,
-                                      HttpServletRequest request) {
+    @ExceptionHandler(PostAlreadyExistsException.class)
+    public String handlePostAlreadyExists(PostAlreadyExistsException e, Model model,
+                                          HttpServletRequest request) {
         Post post = (Post) request.getAttribute("post");
         model.addAttribute("errorMessage", e.getMessage());
         model.addAttribute("post", post != null ? post : new Post());
