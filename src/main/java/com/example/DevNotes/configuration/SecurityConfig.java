@@ -27,7 +27,7 @@ public class SecurityConfig {
     private String adminPassword;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/posts", "/posts/", "/posts/**", "/login").permitAll()

@@ -1,5 +1,6 @@
 package com.example.DevNotes.controllers;
 
+import com.example.DevNotes.exceptions.PostAlreadyExistsException;
 import com.example.DevNotes.models.Post;
 import com.example.DevNotes.services.PostService;
 import jakarta.servlet.http.Cookie;
@@ -51,7 +52,15 @@ public class PostController {
             model.addAttribute("errorMessage", result.getFieldError().getDefaultMessage());
             return "new-post";
         }
-        postService.create(post, draftId);
+        try {
+            postService.create(post, draftId);
+        } catch (PostAlreadyExistsException e) {
+            model.addAttribute("post", post);
+            model.addAttribute("draftId", draftId);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "new-post";
+        }
+
         return "redirect:/posts/" + post.getUrl();
     }
 
@@ -91,7 +100,17 @@ public class PostController {
             model.addAttribute("errorMessage", result.getFieldError().getDefaultMessage());
             return "edit-post";
         }
-        postService.update(url, post, draftId, removedImageIds);
+        try {
+            postService.update(url, post, draftId, removedImageIds);
+        } catch (PostAlreadyExistsException e) {
+            model.addAttribute("post", post);
+            model.addAttribute("draftId", draftId);
+            model.addAttribute("removedImageIds", removedImageIds);
+            model.addAttribute("editUrl", url);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "edit-post";
+        }
+
         return "redirect:/posts/" + url;
     }
 
