@@ -9,56 +9,71 @@
 <th:block th:replace="~{fragments/header :: header}"/>
 
 <main class="content-wrapper">
-    <div class="container">
-        <h1 th:text="'DevNotes (v' + ${version} + ')'"></h1>
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
 
-        <p>
-            <strong>DevNotes</strong> - open-source веб-проект, объединяющий несколько ролей:
-        </p>
+                <h1 class="display-5 fw-bold mb-4" th:text="'DevNotes (v' + ${version} + ')'"></h1>
 
-        <ul>
-            <li>
-                авторский IT-блог с техническими статьями и заметками о разработке
-            </li>
-            <li>
-                pet-проект в портфолио, демонстрирующий навыки проектирования и построения приложений
-            </li>
-            <li>
-                экспериментальная площадка для изучения, тестирования и применения новых технологий
-            </li>
-        </ul>
+                <p class="lead">
+                    <strong>DevNotes</strong> — open-source веб-проект, объединяющий несколько ролей:
+                </p>
 
-        <h2>О проекте</h2>
-        <p>
-            Проект реализован на <strong>Java 21</strong> с использованием базы данных <strong>PostgreSQL</strong>.
-        </p>
-        <p>
-            Основная цель проекта - объединить процесс обучения, разработки и документирования инженерного опыта в одном месте.
-        </p>
+                <ul class="list-unstyled ms-3 mb-4">
+                    <li class="mb-2">✦ авторский IT-блог с техническими статьями и заметками о разработке</li>
+                    <li class="mb-2">✦ pet-проект в портфолио, демонстрирующий навыки проектирования и построения приложений</li>
+                    <li class="mb-2">✦ экспериментальная площадка для изучения, тестирования и применения новых технологий</li>
+                </ul>
 
-        <p>
-            Подробности об архитектуре, устройстве приложения и структуре кода доступны на
-            <a href="http://github.com/javer-63/DevNotes">GitHub</a>, где также публикуются обновления и изменения проекта.
-        </p>
+                <h2 class="h4 fw-semibold mt-5">О проекте</h2>
+                <p>Проект реализован на <strong>Java 21</strong> с использованием базы данных <strong>PostgreSQL</strong>.</p>
+                <p>Основная цель проекта — объединить процесс обучения, разработки и документирования инженерного опыта в одном месте.</p>
+                <p>
+                    Подробности об архитектуре, устройстве приложения и структуре кода доступны на
+                    <a href="http://github.com/javer-63/DevNotes" class="text-reset">GitHub</a>,
+                    где также публикуются обновления и изменения проекта.
+                </p>
 
-        <h2>Статус проекта</h2>
+                <h2 class="h4 fw-semibold mt-5">Статус проекта</h2>
 
-        <ul>
-            <li>Версия: <strong th:text="${version}"></strong></li>
-            <li>Опубликовано статей: <strong th:text="${posts}"></strong></li>
-            <li>Последнее обновление: <strong th:text="${lastUpdate}"></strong></li>
-        </ul>
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-4">
+                        <div class="card border shadow-sm text-center py-3">
+                            <div class="card-body">
+                                <div class="fs-4 fw-bold" th:text="${version}"></div>
+                                <div class="small text-secondary">Версия</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="card border shadow-sm text-center py-3">
+                            <div class="card-body">
+                                <div class="fs-4 fw-bold" th:text="${posts}"></div>
+                                <div class="small text-secondary">Статей</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="card border shadow-sm text-center py-3">
+                            <div class="card-body">
+                                <div class="fs-4 fw-bold" th:text="${lastUpdate}"></div>
+                                <div class="small text-secondary">Последнее обновление</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        <p>
-            Проект находится в разработке, постепенно расширяется
-            и развивается вместе с появлением новых идей, технологий и материалов.
-        </p>
+                <p class="text-secondary" style="text-align: center; border: black 1px solid">Проект находится в разработке, постепенно расширяется и развивается вместе с появлением новых идей, технологий и материалов.</p>
 
-        <h2>Контакты</h2>
+                <h2 class="h4 fw-semibold mt-5">Контакты</h2>
+                <p>
+                    Связаться со мной можно через <a href="https://t.me/pixel_63" class="text-reset">Telegram</a>
+                    или написать мне на
+                    <a href="mailto:sergokulik61@gmail.com" class="text-reset">почту</a>.
+                </p>
 
-        <p>
-            Связаться со мной можно через <a href="https://t.me/pixel_63">Telegram</a>.
-        </p>
+            </div>
+        </div>
     </div>
 </main>
 

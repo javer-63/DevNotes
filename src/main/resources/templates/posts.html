@@ -13,30 +13,27 @@
     <div class="container">
         <div class="post-container">
             <section>
-                <article th:each="post : ${posts}" class="card p-4 mb-3">
-                    <h2>
-                        <a th:href="@{'/posts/' + ${post.url}}"
-                           th:text="${post.title}">
-                        </a>
-                    </h2>
-                    <p th:text="${post.description}" class="mt-2"></p>
+                <article th:each="post : ${posts}" class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h2 class="card-title h5">
+                            <a th:href="@{'/posts/' + ${post.url}}"
+                               th:text="${post.title}" class="text-reset text-decoration-none">
+                            </a>
+                        </h2>
+                        <p th:text="${post.description}" class="card-text text-secondary mt-2 mb-0"></p>
+                    </div>
                 </article>
             </section>
-            <nav th:if="${totalPages > 1}" class="mt-4 pagination">
-                <a th:if="${currentPage > 1}"
-                   th:href="${currentPage == 2 ? '/posts' : '/posts/page/' + (currentPage - 1)}"
-                   class="btn">←</a>
-                <span th:each="i : ${#numbers.sequence(1, totalPages)}" class="mx-1">
-                    <a th:if="${i != currentPage}"
-                       th:href="${i == 1 ? '/posts' : '/posts/page/' + i}"
-                       th:text="${i}"
-                       class="btn">
-                    </a>
+            <nav th:if="${totalPages > 1}" class="mt-4">
+                <a th:if="${currentPage > 1}" class="btn btn-outline-dark"
+                   th:href="${currentPage == 2 ? '/posts' : '/posts/page/' + (currentPage - 1)}">←</a>
+                <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+                    <a th:if="${i != currentPage}" class="btn btn-outline-dark"
+                       th:href="${i == 1 ? '/posts' : '/posts/page/' + i}" th:text="${i}"></a>
                     <strong th:if="${i == currentPage}" th:text="${i}" class="btn"></strong>
                 </span>
-                <a th:if="${currentPage < totalPages}"
-                   th:href="${'/posts/page/' + (currentPage + 1)}"
-                   class="btn">→</a>
+                <a th:if="${currentPage < totalPages}" class="btn btn-outline-dark"
+                   th:href="${'/posts/page/' + (currentPage + 1)}">→</a>
             </nav>
         </div>
     </div>

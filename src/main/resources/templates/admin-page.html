@@ -11,35 +11,52 @@
         <main class="admin-container">
             <section class="mb-4">
                 <h1>Статистика</h1>
-                <div class="admin-stats">
-                    <div class="stat-card">
-                        <div class="stat-label">Всего постов</div>
-                        <div class="stat-value" th:text="${posts}"></div>
+                <div class="row g-3">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="text-uppercase small text-secondary" style="letter-spacing: .6px">Всего постов</div>
+                                <div class="fs-2 fw-bold font-monospace mt-1" th:text="${posts}"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Картинок в БД</div>
-                        <div class="stat-value" th:text="${images}"></div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="text-uppercase small text-secondary" style="letter-spacing: .6px">Картинок в БД</div>
+                                <div class="fs-2 fw-bold font-monospace mt-1" th:text="${images}"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Файлов на диске</div>
-                        <div class="stat-value" th:text="${imageFiles}"></div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="text-uppercase small text-secondary" style="letter-spacing: .6px">Файлов на диске</div>
+                                <div class="fs-2 fw-bold font-monospace mt-1" th:text="${imageFiles}"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Суммарный размер (изображения)</div>
-                        <div class="stat-value" th:text="${imageFilesSize}"></div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="text-uppercase small text-secondary" style="letter-spacing: .6px">Суммарный размер</div>
+                                <div class="fs-2 fw-bold font-monospace mt-1" th:text="${imageFilesSize}"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
-
             <section class="mb-4">
                 <h1 class="mt-4 mb-3">Последний пост</h1>
-                <article class="card p-4" th:if="${lastPost}">
-                    <h2 class="mb-0">
-                        <a th:href="@{'/posts/' + ${lastPost.url}}"
-                           th:text="${lastPost.title}" style="text-decoration: none; color: #0a1620">
-                        </a>
-                    </h2>
-                    <p th:text="${lastPost.description}" class="mt-2 mb-0"></p>
+                <article class="card shadow-sm" th:if="${lastPost}">
+                    <div class="card-body">
+                        <h2 class="mb-0">
+                            <a th:href="@{'/posts/' + ${lastPost.url}}"
+                               th:text="${lastPost.title}" class="text-reset text-decoration-none">
+                            </a>
+                        </h2>
+                        <p th:text="${lastPost.description}" class="mt-2 mb-0 text-secondary"></p>
+                    </div>
                 </article>
             </section>
 
@@ -48,11 +65,11 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item d-flex justify-content-between align-items-center"
                         th:each="post : ${topPosts}">
-                        <a th:href="@{'/posts/' + ${post.url}}"
-                           th:text="${post.title}" style="text-decoration: none; color: #0a1620">
-                        </a>
-                        <span class="text-muted fst-italic"
-                              th:text="${post.views} + ' просмотров'"></span>
+                            <a th:href="@{'/posts/' + ${post.url}}"
+                               th:text="${post.title}" style="text-decoration: none; color: #0a1620">
+                            </a>
+                            <span class="text-muted fst-italic"
+                                  th:text="${post.views} + ' просмотров'"></span>
                     </li>
                 </ul>
             </section>

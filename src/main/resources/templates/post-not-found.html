@@ -8,15 +8,15 @@
 <th:block th:replace="~{fragments/header :: header}"/>
 <div class="container">
     <div class="admin-container">
-        <div class="error-container card p-5">
-            <div class="error-code">404</div>
-            <h1 class="mb-3">Пост не найден</h1>
-            <p class="mb-4">
-                Извините, пост, который вы ищете, не существует или был удален.
-            </p>
-            <a href="/posts" class="btn">
-                Все посты
-            </a>
+        <div class="card shadow-sm">
+            <div class="card-body text-center p-5">
+                <div class="display-1 fw-bold" style="font-size: 110px;">404</div>
+                <h1 class="mb-3">Пост не найден</h1>
+                <p class="mb-4">
+                    Извините, пост, который вы ищете, не существует или был удален.
+                </p>
+                <a href="/posts" class="btn btn-outline-dark">Все посты</a>
+            </div>
         </div>
     </div>
 </div>

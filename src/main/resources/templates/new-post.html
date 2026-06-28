@@ -12,37 +12,39 @@
 <div class="container">
     <div class="admin-container">
         <h1 class="mb-4">Создать новый пост</h1>
-        <form id="postForm" method="post" action="/posts/new" class="card p-4">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-            <input type="hidden" name="draftId" th:value="${draftId}">
+        <form id="postForm" method="post" action="/posts/new" class="card shadow-sm">
+            <div class="card-body">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" name="draftId" th:value="${draftId}">
 
-            <div class="mb-3">
-                <label class="form-label">Заголовок</label>
-                <input type="text" name="title" th:value="${post.title}" class="form-control" required>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Заголовок</label>
+                    <input type="text" name="title" th:value="${post.title}" class="form-control" required>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">URL</label>
-                <input type="text" name="url" th:value="${post.url}" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Время просмотра (мин)</label>
-                <input type="number" name="time" th:value="${post.time}" class="form-control" required>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">URL</label>
+                    <input type="text" name="url" th:value="${post.url}" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Время просмотра (мин)</label>
+                    <input type="number" name="time" th:value="${post.time}" class="form-control" required>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Описание</label>
-                <input type="text" name="description" th:value="${post.description}" class="form-control" required>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Описание</label>
+                    <input type="text" name="description" th:value="${post.description}" class="form-control" required>
+                </div>
 
-            <div class="mb-3">
-                <label class="form-label">Содержание</label>
-                <textarea id="content" name="content" rows="14" class="form-control" th:utext="${post.content}"></textarea>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label">Содержание</label>
+                    <textarea id="content" name="content" rows="14" class="form-control" th:utext="${post.content}"></textarea>
+                </div>
 
-            <div class="d-flex gap-2 btn-group">
-                <button type="submit" class="btn">Сохранить</button>
-                <button type="button" id="cancelBtn" class="btn">Отмена</button>
+                <div class="d-flex gap-2 btn-group">
+                    <button type="submit" class="btn btn-outline-dark">Сохранить</button>
+                    <button type="button" id="cancelBtn" class="btn btn-outline-dark">Отмена</button>
+                </div>
             </div>
         </form>
     </div>
