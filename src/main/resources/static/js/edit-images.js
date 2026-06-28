@@ -51,6 +51,12 @@ function initPostEditor(options) {
         selector: `#${textareaId}`,
         height: 520,
         menubar: false,
+        content_style: `
+        img {
+            width: 100%;
+            height: auto;
+        }
+    `,
         plugins: 'image link lists code',
         toolbar: `
                 formatselect | bold italic underline | h1 h2 h3 h4 h5 |
