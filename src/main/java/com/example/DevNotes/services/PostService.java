@@ -1,9 +1,13 @@
 package com.example.DevNotes.services;
 
+import com.example.DevNotes.dtos.PostRequest;
+import com.example.DevNotes.dtos.PostResponse;
+import com.example.DevNotes.dtos.PostSummary;
 import com.example.DevNotes.exceptions.PostAlreadyExistsException;
 import com.example.DevNotes.exceptions.PostNotFoundException;
 import com.example.DevNotes.models.Post;
 import com.example.DevNotes.repos.PostRepo;
+import com.example.DevNotes.utils.PostMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -14,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -22,27 +25,32 @@ import java.util.UUID;
 public class PostService {
     private final PostRepo postRepo;
     private final ImageService imageService;
+    private final PostMapper postMapper;
 
     @Transactional
-    public void create(Post post, String draftId) {
-        validateUniqURL(post.getUrl());
+    public PostResponse create(PostRequest request, String draftId) {
+        validateUniqueURL(request.url());
+        Post post = postMapper.toEntity(request);
         post.setCreatedAt(LocalDateTime.now());
         Post saved = postRepo.save(post);
         log.info("Создан пост с URL {}", saved.getUrl());
         imageService.attachDraftImagesToPost(draftId, saved);
+        return postMapper.toResponse(saved);
     }
 
     @Transactional(readOnly = true)
-    public Page<Post> findPage(int page, int size) {
-        return postRepo.findAllByOrderByCreatedAtDesc(PageRequest.of(page, size));
+    public Page<PostSummary> findPage(int page, int size) {
+        return postRepo.findAllByOrderByCreatedAtDesc(PageRequest.of(page, size))
+                .map(postMapper::toSummary);
     }
 
     @Transactional(readOnly = true)
-    public Post findByUrl(String url) {
-        return postRepo.findByUrl(url).orElseThrow(() -> {
+    public PostResponse findByUrl(String url) {
+        Post post = postRepo.findByUrl(url).orElseThrow(() -> {
             log.warn("Пост с URL {} не найден", url);
             return new PostNotFoundException("Пост с URL " + url + " не найден");
         });
+        return postMapper.toResponse(post);
     }
 
     @Transactional
@@ -51,29 +59,38 @@ public class PostService {
     }
 
     @Transactional
-    public void update(String url, Post updated, String draftId, String removedImageIds) {
-        Post post = findByUrl(url);
+    public PostResponse update(String url, PostRequest request, String draftId, String removedImageIds) {
+        Post post = postRepo.findByUrl(url).orElseThrow(() -> {
+            log.warn("Пост с URL {} не найден", url);
+            return new PostNotFoundException("Пост с URL " + url + " не найден");
+        });
+
         List<Long> ids = parseIds(removedImageIds);
         if (!ids.isEmpty()) {
             imageService.deleteImagesFromPost(post, ids);
         }
         imageService.attachDraftImagesToPost(draftId, post);
-        post.setTime(updated.getTime());
-        post.setTitle(updated.getTitle());
-        post.setDescription(updated.getDescription());
-        post.setContent(updated.getContent());
-        postRepo.save(post);
+        post.setTime(request.time());
+        post.setTitle(request.title());
+        post.setDescription(request.description());
+        post.setContent(request.content());
+        Post saved = postRepo.save(post);
+        log.info("Обновлён пост с URL {}", saved.getUrl());
+        return postMapper.toResponse(saved);
     }
 
     @Transactional
     public void delete(String url) {
-        Post post = findByUrl(url);
+        Post post = postRepo.findByUrl(url).orElseThrow(() -> {
+            log.warn("Пост с URL {} не найден", url);
+            return new PostNotFoundException("Пост с URL " + url + " не найден");
+        });
         imageService.deleteImagesOfPost(post);
         postRepo.delete(post);
         log.info("Пост с URL {} удален", url);
     }
 
-    private void validateUniqURL(String url) {
+    private void validateUniqueURL(String url) {
         if (postRepo.existsByUrl(url)) {
             log.warn("Пост с URL {} в базе уже есть", url);
             throw new PostAlreadyExistsException("Пост с URL " + url + " в базе уже есть");
@@ -90,6 +107,6 @@ public class PostService {
     }
 
     public String generateDraftId() {
-        return UUID.randomUUID().toString();
+        return java.util.UUID.randomUUID().toString();
     }
 }

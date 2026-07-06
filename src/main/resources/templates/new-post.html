@@ -19,26 +19,26 @@
 
                 <div class="mb-3">
                     <label class="form-label">Заголовок</label>
-                    <input type="text" name="title" th:value="${post.title}" class="form-control" required>
+                    <input type="text" name="title" th:value="${postRequest.title}" class="form-control" required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">URL</label>
-                    <input type="text" name="url" th:value="${post.url}" class="form-control" required>
+                    <input type="text" name="url" th:value="${postRequest.url}" class="form-control" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Время просмотра (мин)</label>
-                    <input type="number" name="time" th:value="${post.time}" class="form-control" required>
+                    <input type="number" name="time" th:value="${postRequest.time}" class="form-control" required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Описание</label>
-                    <input type="text" name="description" th:value="${post.description}" class="form-control" required>
+                    <input type="text" name="description" th:value="${postRequest.description}" class="form-control" required>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Содержание</label>
-                    <textarea id="content" name="content" rows="14" class="form-control" th:utext="${post.content}"></textarea>
+                    <textarea id="content" name="content" rows="14" class="form-control" th:utext="${postRequest.content}"></textarea>
                 </div>
 
                 <div class="d-flex gap-2 btn-group">

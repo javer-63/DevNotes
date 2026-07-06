@@ -1,7 +1,9 @@
 package com.example.DevNotes.controllers;
 
+import com.example.DevNotes.dtos.PostRequest;
+import com.example.DevNotes.dtos.PostResponse;
+import com.example.DevNotes.dtos.PostSummary;
 import com.example.DevNotes.exceptions.PostAlreadyExistsException;
-import com.example.DevNotes.models.Post;
 import com.example.DevNotes.services.PostService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,30 +40,32 @@ public class PostController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/new")
     public String createForm(Model model) {
-        model.addAttribute("post", new Post());
+        model.addAttribute("postRequest",
+                new PostRequest("", "", "", "", (byte) 5));
         model.addAttribute("draftId", postService.generateDraftId());
         return "new-post";
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/new")
-    public String create(@Valid @ModelAttribute Post post, BindingResult result,
+    public String create(@Valid @ModelAttribute PostRequest postRequest, BindingResult result,
                          @RequestParam String draftId, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute("postRequest", postRequest);
             model.addAttribute("draftId", draftId);
-            model.addAttribute("errorMessage", result.getFieldError().getDefaultMessage());
+            if (result.getFieldError() != null) {
+                model.addAttribute("errorMessage", result.getFieldError().getDefaultMessage());
+            }
             return "new-post";
         }
         try {
-            postService.create(post, draftId);
+            return "redirect:/posts/" + postService.create(postRequest, draftId).url();
         } catch (PostAlreadyExistsException e) {
-            model.addAttribute("post", post);
+            model.addAttribute("postRequest", postRequest);
             model.addAttribute("draftId", draftId);
             model.addAttribute("errorMessage", e.getMessage());
             return "new-post";
         }
-
-        return "redirect:/posts/" + post.getUrl();
     }
 
     @GetMapping("/{url}")
@@ -83,35 +87,39 @@ public class PostController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{url}/edit")
     public String edit(@PathVariable String url, Model model) {
-        model.addAttribute("post", postService.findByUrl(url));
+        PostResponse post = postService.findByUrl(url);
+        model.addAttribute("post", post);
         model.addAttribute("draftId", postService.generateDraftId());
+        model.addAttribute("postRequest", new PostRequest(
+                post.url(), post.title(), post.description(), post.content(), post.time()
+        ));
         return "edit-post";
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{url}/edit")
-    public String edit(@PathVariable String url, @Valid @ModelAttribute Post post, BindingResult result,
-                       @RequestParam String draftId,
-                       @RequestParam(required = false) String removedImageIds, Model model) {
+    public String edit(@PathVariable String url, @Valid @ModelAttribute PostRequest postRequest, BindingResult result,
+                       @RequestParam String draftId, @RequestParam(required = false) String removedImageIds, Model model) {
         if (result.hasErrors()) {
+            model.addAttribute("postRequest", postRequest);
             model.addAttribute("draftId", draftId);
             model.addAttribute("removedImageIds", removedImageIds);
             model.addAttribute("editUrl", url);
             model.addAttribute("errorMessage", result.getFieldError().getDefaultMessage());
+            model.addAttribute("post", postService.findByUrl(url));
             return "edit-post";
         }
         try {
-            postService.update(url, post, draftId, removedImageIds);
+            return "redirect:/posts/" + postService.update(url, postRequest, draftId, removedImageIds).url();
         } catch (PostAlreadyExistsException e) {
-            model.addAttribute("post", post);
+            model.addAttribute("postRequest", postRequest);
             model.addAttribute("draftId", draftId);
             model.addAttribute("removedImageIds", removedImageIds);
             model.addAttribute("editUrl", url);
             model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("post", postService.findByUrl(url));
             return "edit-post";
         }
-
-        return "redirect:/posts/" + url;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -124,7 +132,7 @@ public class PostController {
     private String renderPostsPage(int page, Model model) {
         if (page < 1) return "redirect:/posts";
 
-        Page<Post> postsPage = postService.findPage(page - 1, postsPageSize);
+        Page<PostSummary> postsPage = postService.findPage(page - 1, postsPageSize);
         int totalPages = postsPage.getTotalPages();
 
         if (totalPages > 0 && page > totalPages) return "redirect:/posts";
