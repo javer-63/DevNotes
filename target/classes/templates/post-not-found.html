@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Пост не найден</title>
+    <th:block th:replace="~{fragments/head :: head}"/>
+</head>
+<body class="not-found-page">
+<th:block th:replace="~{fragments/header :: header}"/>
+<div class="container">
+    <div class="admin-container">
+        <div class="card shadow-sm">
+            <div class="card-body text-center p-5">
+                <div class="display-1 fw-bold" style="font-size: 110px;">404</div>
+                <h1 class="mb-3">Пост не найден</h1>
+                <p class="mb-4">
+                    Извините, пост, который вы ищете, не существует или был удален.
+                </p>
+                <a href="/posts" class="btn btn-outline-dark">Все посты</a>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:replace="~{fragments/footer :: footer}"/>
+</body>
+</html>

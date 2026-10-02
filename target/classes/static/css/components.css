@@ -1,0 +1,14 @@
+.admin-container,
+.post-container,
+.page-container {
+    max-width: 1100px;
+    margin: auto;
+    background: transparent;
+}
+
+.form-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+}
