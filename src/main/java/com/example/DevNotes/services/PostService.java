@@ -24,17 +24,15 @@ import java.util.List;
 @Slf4j
 public class PostService {
     private final PostRepo postRepo;
-    private final ImageService imageService;
     private final PostMapper postMapper;
 
     @Transactional
-    public PostResponse create(PostRequest request, String draftId) {
+    public PostResponse create(PostRequest request) {
         validateUniqueURL(request.url());
         Post post = postMapper.toEntity(request);
         post.setCreatedAt(LocalDateTime.now());
         Post saved = postRepo.save(post);
         log.info("Создан пост с URL {}", saved.getUrl());
-        imageService.attachDraftImagesToPost(draftId, saved);
         return postMapper.toResponse(saved);
     }
 
@@ -59,17 +57,11 @@ public class PostService {
     }
 
     @Transactional
-    public PostResponse update(String url, PostRequest request, String draftId, String removedImageIds) {
+    public PostResponse update(String url, PostRequest request) {
         Post post = postRepo.findByUrl(url).orElseThrow(() -> {
             log.warn("Пост с URL {} не найден", url);
             return new PostNotFoundException("Пост с URL " + url + " не найден");
         });
-
-        List<Long> ids = parseIds(removedImageIds);
-        if (!ids.isEmpty()) {
-            imageService.deleteImagesFromPost(post, ids);
-        }
-        imageService.attachDraftImagesToPost(draftId, post);
         post.setTime(request.time());
         post.setTitle(request.title());
         post.setDescription(request.description());
@@ -85,7 +77,6 @@ public class PostService {
             log.warn("Пост с URL {} не найден", url);
             return new PostNotFoundException("Пост с URL " + url + " не найден");
         });
-        imageService.deleteImagesOfPost(post);
         postRepo.delete(post);
         log.info("Пост с URL {} удален", url);
     }
@@ -95,18 +86,5 @@ public class PostService {
             log.warn("Пост с URL {} в базе уже есть", url);
             throw new PostAlreadyExistsException("Пост с URL " + url + " в базе уже есть");
         }
-    }
-
-    private List<Long> parseIds(String ids) {
-        if (ids == null || ids.isBlank()) return List.of();
-        return Arrays.stream(ids.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .map(Long::parseLong)
-                .toList();
-    }
-
-    public String generateDraftId() {
-        return java.util.UUID.randomUUID().toString();
     }
 }

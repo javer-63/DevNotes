@@ -13,13 +13,9 @@ admin:
   password: ${ADMIN_PASSWORD}
 
 app:
-  upload-dir: uploads/images
-  max-image-size: 10MB
   posts:
     page-size: 10
   views-cookie-max-age-seconds: 86400
-  cleanup:
-    draft-images-batch-size: 100
 
 management:
   endpoints:

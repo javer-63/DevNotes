@@ -6,7 +6,6 @@
     <title>Редактирование поста</title>
     <th:block th:replace="~{fragments/head :: head}"/>
     <script src="/tinymce/js/tinymce/tinymce.min.js"></script>
-    <script src="/js/edit-images.js"></script>
 </head>
 <body class="edit-page">
 <div class="container">
@@ -15,8 +14,6 @@
         <form id="editForm" method="post" th:action="@{'/posts/' + ${post.url} + '/edit'}" class="card shadow-sm">
             <div class="card-body">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                <input type="hidden" name="draftId" th:value="${draftId}">
-                <input type="hidden" name="removedImageIds" id="removedImageIds">
 
                 <div class="mb-3">
                     <label class="form-label">Заголовок</label>
@@ -46,21 +43,23 @@
         </form>
     </div>
 </div>
-<div id="existingImages" hidden>
-    <img th:each="img : ${post.images}"
-         th:src="${img.url}"
-         th:data-id="${img.id}">
-</div>
 <script th:if="${errorMessage}">
     alert("[[${errorMessage}]]");
 </script>
 <script>
-    initPostEditor({
-        textareaId: "content",
-        draftIdSelector: "[name=draftId]",
-        existingImagesSelector: "#existingImages img",
-        removedInputSelector: "#removedImageIds",
-        redirectOnCancel: "/posts/[[${post.url}]]"
+    tinymce.init({
+        license_key: 'gpl',
+        selector: '#content',
+        height: 520,
+        menubar: false,
+        plugins: 'link lists code',
+        toolbar: 'formatselect | bold italic underline | h1 h2 h3 h4 | bullist numlist | link | code',
+        relative_urls: false,
+        remove_script_host: true
+    });
+
+    document.getElementById("cancelBtn").addEventListener("click", () => {
+        window.location.href = "/posts/[[${post.url}]]";
     });
 </script>
 </body>

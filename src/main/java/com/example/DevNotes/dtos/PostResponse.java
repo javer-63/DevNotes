@@ -11,6 +11,5 @@ public record PostResponse (
         String content,
         byte time,
         LocalDateTime createdAt,
-        long views,
-        List<ImageResponse> images
+        long views
 ) {}

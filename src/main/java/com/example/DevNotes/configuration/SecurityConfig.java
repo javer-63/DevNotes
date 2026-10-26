@@ -36,7 +36,6 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .requestMatchers("/admin", "/posts/new", "/posts/*/edit", "/posts/*/delete").hasRole("ADMIN")
-                        .requestMatchers("/api/images/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )

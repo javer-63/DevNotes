@@ -42,27 +42,23 @@ public class PostController {
     public String createForm(Model model) {
         model.addAttribute("postRequest",
                 new PostRequest("", "", "", "", (byte) 5));
-        model.addAttribute("draftId", postService.generateDraftId());
         return "new-post";
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/new")
-    public String create(@Valid @ModelAttribute PostRequest postRequest, BindingResult result,
-                         @RequestParam String draftId, Model model) {
+    public String create(@Valid @ModelAttribute PostRequest postRequest, BindingResult result, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("postRequest", postRequest);
-            model.addAttribute("draftId", draftId);
             if (result.getFieldError() != null) {
                 model.addAttribute("errorMessage", result.getFieldError().getDefaultMessage());
             }
             return "new-post";
         }
         try {
-            return "redirect:/posts/" + postService.create(postRequest, draftId).url();
+            return "redirect:/posts/" + postService.create(postRequest).url();
         } catch (PostAlreadyExistsException e) {
             model.addAttribute("postRequest", postRequest);
-            model.addAttribute("draftId", draftId);
             model.addAttribute("errorMessage", e.getMessage());
             return "new-post";
         }
@@ -89,7 +85,6 @@ public class PostController {
     public String edit(@PathVariable String url, Model model) {
         PostResponse post = postService.findByUrl(url);
         model.addAttribute("post", post);
-        model.addAttribute("draftId", postService.generateDraftId());
         model.addAttribute("postRequest", new PostRequest(
                 post.url(), post.title(), post.description(), post.content(), post.time()
         ));
@@ -98,23 +93,19 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{url}/edit")
-    public String edit(@PathVariable String url, @Valid @ModelAttribute PostRequest postRequest, BindingResult result,
-                       @RequestParam String draftId, @RequestParam(required = false) String removedImageIds, Model model) {
+    public String edit(@PathVariable String url, @Valid @ModelAttribute PostRequest postRequest,
+                       BindingResult result, Model model) {
         if (result.hasErrors()) {
             model.addAttribute("postRequest", postRequest);
-            model.addAttribute("draftId", draftId);
-            model.addAttribute("removedImageIds", removedImageIds);
             model.addAttribute("editUrl", url);
             model.addAttribute("errorMessage", result.getFieldError().getDefaultMessage());
             model.addAttribute("post", postService.findByUrl(url));
             return "edit-post";
         }
         try {
-            return "redirect:/posts/" + postService.update(url, postRequest, draftId, removedImageIds).url();
+            return "redirect:/posts/" + postService.update(url, postRequest).url();
         } catch (PostAlreadyExistsException e) {
             model.addAttribute("postRequest", postRequest);
-            model.addAttribute("draftId", draftId);
-            model.addAttribute("removedImageIds", removedImageIds);
             model.addAttribute("editUrl", url);
             model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("post", postService.findByUrl(url));

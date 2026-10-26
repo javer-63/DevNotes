@@ -39,8 +39,5 @@ public class Post {
 
     private LocalDateTime createdAt;
 
-    @OneToMany (mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images = new ArrayList<>();
-
     private long views;
 }
