@@ -49,18 +49,14 @@ public class PostController {
     @PostMapping("/new")
     public String create(@Valid @ModelAttribute PostRequest postRequest, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("postRequest", postRequest);
-            if (result.getFieldError() != null) {
-                model.addAttribute("errorMessage", result.getFieldError().getDefaultMessage());
-            }
-            return "new-post";
+            String errorMessage = result.getFieldError() != null
+                    ? result.getFieldError().getDefaultMessage() : null;
+            return renderCreateForm(postRequest, errorMessage, model);
         }
         try {
             return "redirect:/posts/" + postService.create(postRequest).url();
         } catch (PostAlreadyExistsException e) {
-            model.addAttribute("postRequest", postRequest);
-            model.addAttribute("errorMessage", e.getMessage());
-            return "new-post";
+            return renderCreateForm(postRequest, e.getMessage(), model);
         }
     }
 
@@ -96,21 +92,11 @@ public class PostController {
     public String edit(@PathVariable String url, @Valid @ModelAttribute PostRequest postRequest,
                        BindingResult result, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("postRequest", postRequest);
-            model.addAttribute("editUrl", url);
-            model.addAttribute("errorMessage", result.getFieldError().getDefaultMessage());
-            model.addAttribute("post", postService.findByUrl(url));
-            return "edit-post";
+            String errorMessage = result.getFieldError() != null
+                    ? result.getFieldError().getDefaultMessage() : null;
+            return renderEditForm(url, postRequest, errorMessage, model);
         }
-        try {
-            return "redirect:/posts/" + postService.update(url, postRequest).url();
-        } catch (PostAlreadyExistsException e) {
-            model.addAttribute("postRequest", postRequest);
-            model.addAttribute("editUrl", url);
-            model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("post", postService.findByUrl(url));
-            return "edit-post";
-        }
+        return "redirect:/posts/" + postService.update(url, postRequest).url();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -138,5 +124,23 @@ public class PostController {
         model.addAttribute("nextUrl", page < totalPages ? base + "/page/" + (page + 1) : null);
 
         return "posts";
+    }
+
+    private String renderCreateForm(PostRequest postRequest, String errorMessage, Model model) {
+        model.addAttribute("postRequest", postRequest);
+        if (errorMessage != null) {
+            model.addAttribute("errorMessage", errorMessage);
+        }
+        return "new-post";
+    }
+
+    private String renderEditForm(String url, PostRequest postRequest, String errorMessage, Model model) {
+        model.addAttribute("postRequest", postRequest);
+        model.addAttribute("editUrl", url);
+        model.addAttribute("post", postService.findByUrl(url));
+        if (errorMessage != null) {
+            model.addAttribute("errorMessage", errorMessage);
+        }
+        return "edit-post";
     }
 }

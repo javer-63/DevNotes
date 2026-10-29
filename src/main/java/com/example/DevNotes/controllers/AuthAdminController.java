@@ -1,7 +1,6 @@
 package com.example.DevNotes.controllers;
 
 
-import com.example.DevNotes.models.Post;
 import com.example.DevNotes.repos.PostRepo;
 import com.example.DevNotes.utils.PostMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +24,8 @@ public class AuthAdminController {
     @GetMapping("/admin")
     public String admin(Model model) {
         model.addAttribute("posts", postRepo.count());
-        Post lastPost = postRepo.findTopByOrderByCreatedAtDesc();
-        if (lastPost != null) {
-            model.addAttribute("lastPost", postMapper.toSummary(lastPost));
-        }
+        postRepo.findTopByOrderByCreatedAtDesc().map(postMapper::toSummary)
+                .ifPresent(lastPost -> model.addAttribute("lastPost", lastPost));
         model.addAttribute("topPosts", postRepo.findTop5ByOrderByViewsDesc()
                 .stream()
                 .map(postMapper::toSummary)

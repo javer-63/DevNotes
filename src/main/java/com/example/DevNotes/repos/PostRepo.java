@@ -17,7 +17,7 @@ import java.util.Optional;
 public interface PostRepo extends JpaRepository<Post, Long> {
     Optional<Post> findByUrl(String url);
 
-    Post findTopByOrderByCreatedAtDesc();
+    Optional<Post> findTopByOrderByCreatedAtDesc();
 
     Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
