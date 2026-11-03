@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Controller
 @RequestMapping("/posts")
@@ -47,14 +48,17 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/new")
-    public String create(@Valid @ModelAttribute PostRequest postRequest, BindingResult result, Model model) {
+    public String create(@Valid @ModelAttribute PostRequest postRequest,
+                         BindingResult result,
+                         @RequestParam(value = "imageFileNames", required = false) List<String> imageFileNames,
+                         Model model) {
         if (result.hasErrors()) {
             String errorMessage = result.getFieldError() != null
                     ? result.getFieldError().getDefaultMessage() : null;
             return renderCreateForm(postRequest, errorMessage, model);
         }
         try {
-            return "redirect:/posts/" + postService.create(postRequest).url();
+            return "redirect:/posts/" + postService.create(postRequest, imageFileNames).url();
         } catch (PostAlreadyExistsException e) {
             return renderCreateForm(postRequest, e.getMessage(), model);
         }
@@ -81,6 +85,7 @@ public class PostController {
     public String edit(@PathVariable String url, Model model) {
         PostResponse post = postService.findByUrl(url);
         model.addAttribute("post", post);
+        model.addAttribute("postId", postService.findIdByUrl(url));
         model.addAttribute("postRequest", new PostRequest(
                 post.url(), post.title(), post.description(), post.content(), post.time()
         ));
@@ -89,14 +94,17 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{url}/edit")
-    public String edit(@PathVariable String url, @Valid @ModelAttribute PostRequest postRequest,
-                       BindingResult result, Model model) {
+    public String edit(@PathVariable String url,
+                       @Valid @ModelAttribute PostRequest postRequest,
+                       BindingResult result,
+                       @RequestParam(value = "imageFileNames", required = false) List<String> imageFileNames,
+                       Model model) {
         if (result.hasErrors()) {
             String errorMessage = result.getFieldError() != null
                     ? result.getFieldError().getDefaultMessage() : null;
             return renderEditForm(url, postRequest, errorMessage, model);
         }
-        return "redirect:/posts/" + postService.update(url, postRequest).url();
+        return "redirect:/posts/" + postService.update(url, postRequest, imageFileNames).url();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -138,6 +146,7 @@ public class PostController {
         model.addAttribute("postRequest", postRequest);
         model.addAttribute("editUrl", url);
         model.addAttribute("post", postService.findByUrl(url));
+        model.addAttribute("postId", postService.findIdByUrl(url));
         if (errorMessage != null) {
             model.addAttribute("errorMessage", errorMessage);
         }

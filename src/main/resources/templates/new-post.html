@@ -39,6 +39,8 @@
                     <textarea id="content" name="content" rows="20" class="form-control" th:utext="${postRequest.content}"></textarea>
                 </div>
 
+                <input type="hidden" name="imageFileNames" id="imageFileNames">
+
                 <div class="d-flex gap-2 btn-group">
                     <button type="submit" class="btn btn-outline-dark">Сохранить</button>
                     <button type="button" id="cancelBtn" class="btn btn-outline-dark">Отмена</button>
@@ -47,31 +49,15 @@
         </form>
     </div>
 </div>
-
-<!-- 1. Библиотеки: сначала jQuery, потом Trumbowyg -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.31.0/dist/trumbowyg.min.js"></script>
-
-<!-- 2. Твой код -->
+<script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.31.0/dist/plugins/upload/trumbowyg.upload.min.js"></script>
 <script th:if="${errorMessage}">
     alert("[[${errorMessage}]]");
 </script>
+<script src="/js/editor.js"></script>
 <script>
-    $('#content').trumbowyg({
-        btns: [
-            ['formatting'],
-            ['strong', 'em', 'del'],
-            ['link'],
-            ['unorderedList', 'orderedList'],
-            ['horizontalRule'],
-            ['removeformat'],
-            ['fullscreen']
-        ]
-    });
-
-    document.getElementById("cancelBtn").addEventListener("click", () => {
-        window.location.href = "/posts";
-    });
+    document.getElementById("cancelBtn").addEventListener("click", () => window.location.href = "/posts");
 </script>
 </body>
 </html>

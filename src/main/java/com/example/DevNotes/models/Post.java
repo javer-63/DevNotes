@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(exclude = "content")
+@ToString(exclude = {"content", "images"})
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,4 +43,12 @@ public class Post {
     private LocalDateTime createdAt;
 
     private long views;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostImage> images = new ArrayList<>();
+
+    public void addImage(PostImage image) {
+        images.add(image);
+        image.setPost(this);
+    }
 }
