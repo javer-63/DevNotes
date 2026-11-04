@@ -9,35 +9,34 @@
 </head>
 <body class="posts-page">
 <th:block th:replace="~{fragments/header :: header}"/>
-<div class="content-wrapper">
-    <div class="container">
-        <div class="post-container">
-            <section>
-                <article th:each="post : ${posts}" class="card shadow-sm mb-3">
-                    <div class="card-body">
-                        <h2 class="card-title h5">
-                            <a th:href="@{'/posts/' + ${post.url}}"
-                               th:text="${post.title}" class="text-reset text-decoration-none">
-                            </a>
-                        </h2>
-                        <p th:text="${post.description}" class="card-text text-secondary mt-2 mb-0"></p>
-                    </div>
-                </article>
-            </section>
-            <nav th:if="${totalPages > 1}" class="mt-4">
-                <a th:if="${currentPage > 1}" class="btn btn-outline-dark"
-                   th:href="${currentPage == 2 ? '/posts' : '/posts/page/' + (currentPage - 1)}">←</a>
-                <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-                    <a th:if="${i != currentPage}" class="btn btn-outline-dark"
-                       th:href="${i == 1 ? '/posts' : '/posts/page/' + i}" th:text="${i}"></a>
-                    <strong th:if="${i == currentPage}" th:text="${i}" class="btn"></strong>
-                </span>
-                <a th:if="${currentPage < totalPages}" class="btn btn-outline-dark"
-                   th:href="${'/posts/page/' + (currentPage + 1)}">→</a>
-            </nav>
-        </div>
-    </div>
-</div>
+
+<main class="container">
+    <h1 class="mb-4">Все посты</h1>
+
+    <section>
+        <article th:each="post : ${posts}" class="card mb-3">
+            <div class="card-body">
+                <h2 class="h5 mb-2">
+                    <a th:href="@{'/posts/' + ${post.url}}" th:text="${post.title}"></a>
+                </h2>
+                <p th:text="${post.description}" class="post-meta mb-0"></p>
+            </div>
+        </article>
+    </section>
+
+    <nav th:if="${totalPages > 1}" class="pagination">
+        <a th:if="${currentPage > 1}" class="page-link"
+           th:href="${currentPage == 2 ? '/posts' : '/posts/page/' + (currentPage - 1)}">←</a>
+        <th:block th:each="i : ${#numbers.sequence(1, totalPages)}">
+            <a th:if="${i != currentPage}" class="page-link"
+               th:href="${i == 1 ? '/posts' : '/posts/page/' + i}" th:text="${i}"></a>
+            <span th:if="${i == currentPage}" th:text="${i}" class="page-current"></span>
+        </th:block>
+        <a th:if="${currentPage < totalPages}" class="page-link"
+           th:href="${'/posts/page/' + (currentPage + 1)}">→</a>
+    </nav>
+</main>
+
 <th:block th:replace="~{fragments/footer :: footer}"/>
 </body>
 </html>

@@ -7,7 +7,7 @@
     $('#content').trumbowyg({
         btns: [
             ['formatting'], ['strong', 'em', 'del'], ['link'],
-            ['insertImage', 'upload'],
+            ['upload'],
             ['unorderedList', 'orderedList'], ['horizontalRule'],
             ['removeformat'], ['fullscreen']
         ],

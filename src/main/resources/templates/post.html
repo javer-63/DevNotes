@@ -8,37 +8,32 @@
 </head>
 <body class="post-page">
 <th:block th:replace="~{fragments/header :: header}"/>
-<div class="page-wrapper">
-    <div class="container">
-        <div class="page-container">
-            <article th:object="${post}" class="card shadow-sm">
-                <div class="card-body">
-                    <h1 th:text="*{title}" class="post-title">Title</h1>
-                    <div class="d-flex justify-content-between text-secondary font-monospace my-3">                        <span th:text="${#temporals.format(post.createdAt, 'dd.MM.yy HH:mm')}">Дата</span>
-                        <span th:text="*{views} + ' 👁'">0</span>
-                        <span th:text="*{time} + ' мин'">0</span>
-                    </div>
-                    <div class="post-content mt-1" th:utext="*{content}">Содержание</div>
-                </div>
-                <a href="/posts" class="m-3 text-secondary text-decoration-none">← Все посты</a>
-            </article>
-            <div sec:authorize="hasRole('ADMIN')" class="mt-4">
-                <div class="d-flex gap-2 btn-group">
-                    <a th:href="@{'/posts/' + ${post.url} + '/edit'}" class="btn btn-outline-dark">
-                        Редактировать
-                    </a>
-                    <form th:action="'/posts/' + ${post.url} + '/delete'" method="post" class="w-50">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <button type="submit" class="btn btn-outline-danger w-100"
-                                onclick="return confirm('Удалить пост?')">
-                            Удалить
-                        </button>
-                    </form>
-                </div>
+
+<main class="container">
+    <article th:object="${post}" class="card">
+        <div class="card-body">
+            <h1 th:text="*{title}" class="post-title">Title</h1>
+            <div class="post-meta d-flex justify-content-between my-3">
+                <span th:text="${#temporals.format(post.createdAt, 'dd.MM.yy HH:mm')}">Дата</span>
+                <span th:text="*{views} + ' 👁'">0</span>
+                <span th:text="*{time} + ' мин'">0</span>
             </div>
+            <div class="post-content" th:utext="*{content}">Содержание</div>
         </div>
+        <a href="/posts" class="back-link">← Все посты</a>
+    </article>
+
+    <div sec:authorize="hasRole('ADMIN')" class="actions">
+        <a th:href="@{'/posts/' + ${post.url} + '/edit'}" class="nav-link">Редактировать</a>
+        <form th:action="'/posts/' + ${post.url} + '/delete'" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button type="submit" class="nav-link nav-link-danger"
+                    style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:.85rem;"
+                    onclick="return confirm('Удалить пост?')">Удалить</button>
+        </form>
     </div>
-</div>
+</main>
+
 <th:block th:replace="~{fragments/footer :: footer}"/>
 </body>
 </html>

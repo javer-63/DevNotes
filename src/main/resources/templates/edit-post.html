@@ -7,53 +7,49 @@
     <th:block th:replace="~{fragments/head :: head}"/>
 </head>
 <body class="edit-page">
-<div class="container">
-    <div class="admin-container">
-        <h1 class="mb-4">Редактирование поста</h1>
-        <form id="editForm" method="post" th:action="@{'/posts/' + ${post.url} + '/edit'}" class="card shadow-sm">
-            <div class="card-body">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                <input type="hidden" id="postId" th:value="${postId}">
+<th:block th:replace="~{fragments/header :: header}"/>
 
-                <div class="mb-3">
-                    <label class="form-label">Заголовок</label>
-                    <input type="text" name="title" th:value="${postRequest.title}" class="form-control" required>
-                </div>
+<main class="container">
+    <h1 class="mb-4">Редактирование поста</h1>
+    <form id="editForm" method="post" th:action="@{'/posts/' + ${post.url} + '/edit'}" class="card">
+        <div class="card-body">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="hidden" id="postId" th:value="${postId}">
 
-                <div class="mb-3">
-                    <label class="form-label">Время просмотра (мин)</label>
-                    <input type="number" name="time" th:value="${postRequest.time}" class="form-control" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Описание</label>
-                    <input type="text" name="description" th:value="${postRequest.description}" class="form-control" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Содержание</label>
-                    <textarea id="content" name="content" rows="20" class="form-control" th:utext="${postRequest.content}"></textarea>
-                </div>
-
-                <input type="hidden" name="imageFileNames" id="imageFileNames">
-
-                <div class="d-flex gap-2 btn-group">
-                    <button type="submit" class="btn btn-outline-dark">Сохранить</button>
-                    <button type="button" id="cancelBtn" class="btn btn-outline-dark">Отмена</button>
-                </div>
+            <div class="mb-3">
+                <label class="form-label">Заголовок</label>
+                <input type="text" name="title" th:value="${postRequest.title}" class="form-control" required>
             </div>
-        </form>
-    </div>
-</div>
+
+            <div class="mb-3">
+                <label class="form-label">Время просмотра (мин)</label>
+                <input type="number" name="time" th:value="${postRequest.time}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Описание</label>
+                <input type="text" name="description" th:value="${postRequest.description}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Содержание</label>
+                <textarea id="content" name="content" rows="20" class="form-control" th:utext="${postRequest.content}"></textarea>
+            </div>
+
+            <input type="hidden" name="imageFileNames" id="imageFileNames">
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-outline-dark">Сохранить</button>
+                <a th:href="@{'/posts/' + ${post.url}}" class="back-link" style="margin:0;align-self:center;">Отмена</a>
+            </div>
+        </div>
+    </form>
+</main>
+<th:block th:replace="~{fragments/footer :: footer}"/>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.31.0/dist/trumbowyg.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/trumbowyg@2.31.0/dist/plugins/upload/trumbowyg.upload.min.js"></script>
-<script th:if="${errorMessage}">
-    alert("[[${errorMessage}]]");
-</script>
+<script th:if="${errorMessage}">alert("[[${errorMessage}]]");</script>
 <script src="/js/editor.js"></script>
-<script>
-    document.getElementById("cancelBtn").addEventListener("click", () => window.location.href = "/posts/[[${post.url}]]");
-</script>
 </body>
 </html>
