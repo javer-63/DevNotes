@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 @RequiredArgsConstructor
-public class AuthAdminController {
+public class AdminController {
     private final PostRepo postRepo;
     private final PostMapper postMapper;
 

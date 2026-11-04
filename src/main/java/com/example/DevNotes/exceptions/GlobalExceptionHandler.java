@@ -13,7 +13,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PostNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handlePostNotFound(PostNotFoundException e) {
-        log.warn("404: {}", e.getMessage());
         return "post-not-found";
     }
 }

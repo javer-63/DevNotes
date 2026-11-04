@@ -30,7 +30,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/posts", "/posts/", "/posts/**", "/login").permitAll()
+                        .requestMatchers("/", "/posts", "/posts/**", "/login").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**",
                                 "/DevNotes.png", "/favicon.ico").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
