@@ -21,7 +21,6 @@ public class PostFormRenderer {
     public String renderEdit(String url, PostRequest request, String error, Model model) {
         PostResponse post = postService.findByUrl(url);
         model.addAttribute("post", post);
-        model.addAttribute("postId", post.id());
         PostRequest effective = request != null ? request
                 : new PostRequest(post.url(), post.title(), post.description(), post.content(), post.time());
         model.addAttribute("postRequest", effective);

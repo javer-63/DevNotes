@@ -1,8 +1,6 @@
 (function () {
     const csrfToken = document.querySelector('meta[name="_csrf"]').content;
     const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
-    const postIdEl = document.getElementById('postId');
-    const postId = postIdEl ? postIdEl.value : null;
 
     $('#content').trumbowyg({
         btns: [
@@ -16,7 +14,7 @@
                 serverPath: '/api/images/upload',
                 fileFieldName: 'file',
                 urlPropertyName: 'url',
-                data: postId ? [{ name: 'postId', value: postId }] : [],
+                data: [],
                 headers: { [csrfHeader]: csrfToken }
             }
         }
