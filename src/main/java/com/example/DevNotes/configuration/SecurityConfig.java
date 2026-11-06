@@ -1,7 +1,7 @@
 package com.example.DevNotes.configuration;
 
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
+import com.example.DevNotes.services.AuthLoggingHandler;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,8 +17,10 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableMethodSecurity
-@Slf4j
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final AuthLoggingHandler authLoggingHandler;
 
     @Value("${admin.username}")
     private String adminUsername;
@@ -27,30 +29,22 @@ public class SecurityConfig {
     private String adminPassword;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/posts", "/posts/**", "/login").permitAll()
-                        .requestMatchers("/css/**", "/js/**", "/images/**",
-                                "/DevNotes.png", "/favicon.ico").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .requestMatchers("/admin", "/posts/new", "/posts/*/edit", "/posts/*/delete").hasRole("ADMIN")
-
                         .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(
-                                CookieCsrfTokenRepository.withHttpOnlyFalse()
-                        )
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .successHandler((req, res, auth) -> {
-                            log.info("Вход администратора: устройство - {}, ip - {}",
-                                    detectDevice(req.getHeader("User-Agent")), resolveClientIp(req));
-                            res.sendRedirect("/admin");
-                        })
+                        .successHandler(authLoggingHandler)
                         .permitAll()
                 )
                 .logout(logout -> logout
@@ -73,28 +67,5 @@ public class SecurityConfig {
                 .roles("ADMIN")
                 .build();
         return new InMemoryUserDetailsManager(admin);
-    }
-
-    private String resolveClientIp(HttpServletRequest request) {
-        String xForwardedFor = request.getHeader("X-Forwarded-For");
-        if (xForwardedFor != null && !xForwardedFor.isBlank()) {
-            return xForwardedFor.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
-    }
-
-    private String detectDevice(String userAgent) {
-        if (userAgent == null || userAgent.isBlank()) {
-            return "неизвестно";
-        }
-
-        String ua = userAgent.toLowerCase();
-        if (ua.contains("mobile") || ua.contains("android") || ua.contains("iphone")) {
-            return "телефон";
-        }
-        if (ua.contains("ipad") || ua.contains("tablet")) {
-            return "планшет";
-        }
-        return "пк/компьютер";
     }
 }

@@ -17,5 +17,6 @@ public interface PostMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "views", ignore = true)
+    @Mapping(target = "images", ignore = true)
     Post toEntity(PostRequest request);
 }

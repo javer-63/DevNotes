@@ -11,16 +11,11 @@ import com.example.DevNotes.repos.PostRepo;
 import com.example.DevNotes.utils.PostMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,9 +26,6 @@ public class PostService {
     private final PostRepo postRepo;
     private final PostImageRepo postImageRepo;
     private final PostMapper postMapper;
-
-    @Value("${app.upload-dir}")
-    private String uploadDir;
 
     @Transactional
     public PostResponse create(PostRequest request, List<String> imageFileNames) {
@@ -54,24 +46,12 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostResponse findByUrl(String url) {
-        Post post = postRepo.findByUrl(url).orElseThrow(() -> {
-            log.warn("Пост с URL {} не найден", url);
-            return new PostNotFoundException("Пост с URL " + url + " не найден");
-        });
-        return postMapper.toResponse(post);
-    }
-
-    @Transactional
-    public void incrementViews(String url) {
-        postRepo.incrementViews(url);
+        return postMapper.toResponse(findPostOrThrow(url));
     }
 
     @Transactional
     public PostResponse update(String url, PostRequest request, List<String> imageFileNames) {
-        Post post = postRepo.findByUrl(url).orElseThrow(() -> {
-            log.warn("Пост с URL {} не найден", url);
-            return new PostNotFoundException("Пост с URL " + url + " не найден");
-        });
+        Post post = findPostOrThrow(url);
         post.setTime(request.time());
         post.setTitle(request.title());
         post.setDescription(request.description());
@@ -84,24 +64,39 @@ public class PostService {
 
     @Transactional
     public void delete(String url) {
-        Post post = postRepo.findByUrl(url).orElseThrow(() -> {
-            log.warn("Пост с URL {} не найден", url);
-            return new PostNotFoundException("Пост с URL " + url + " не найден");
-        });
-        Path dir = Paths.get(uploadDir).toAbsolutePath().normalize();
-        post.getImages().forEach(img -> {
-            try { Files.deleteIfExists(dir.resolve(img.getFileName())); } catch (IOException ignored) {}
-        });
+        Post post = findPostOrThrow(url);
+        post.getImages().forEach(img -> img.setPost(null));
         postRepo.delete(post);
-        log.info("Пост с URL {} удален", url);
+        log.info("Пост с URL {} удален, картинки отвязаны", url);
     }
 
     @Transactional(readOnly = true)
-    public Long findIdByUrl(String url) {
-        return postRepo.findByUrl(url).map(Post::getId).orElse(null);
+    public long countPosts() {
+        return postRepo.count();
     }
 
-    /** Привязывает новые картинки и отвязывает те, что убрали из текста. */
+    @Transactional(readOnly = true)
+    public PostSummary findLast() {
+        return postRepo.findTopByOrderByCreatedAtDesc()
+                .map(postMapper::toSummary)
+                .orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostSummary> findTop5ByViews() {
+        return postRepo.findTop5ByOrderByViewsDesc()
+                .stream()
+                .map(postMapper::toSummary)
+                .toList();
+    }
+
+    private Post findPostOrThrow(String url) {
+        return postRepo.findByUrl(url).orElseThrow(() -> {
+            log.warn("Пост с URL {} не найден", url);
+            return new PostNotFoundException("Пост с URL " + url + " не найден");
+        });
+    }
+
     private void syncImages(Post post, List<String> names) {
         final List<String> incoming = names == null ? List.of() : names;
         post.getImages().removeIf(img -> {

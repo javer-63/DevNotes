@@ -7,7 +7,7 @@ public record PostSummary (
         String url,
         String title,
         String description,
-        byte time,
+        int time,
         LocalDateTime createdAt,
         long views
 ) {}

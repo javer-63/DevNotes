@@ -3,9 +3,8 @@ package com.example.DevNotes.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,36 +14,36 @@ import java.util.List;
 @Table(name = "posts")
 @Getter
 @Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(exclude = {"content", "images"})
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    @NotBlank(message = "URL не может быть пустым")
-    @Pattern(regexp = "^[a-z0-9-]+$", message = "URL может содержать только латинские буквы, цифры и тире")
+    @Column(unique = true, nullable = false, length = 50)
     private String url;
 
-    @NotBlank(message = "Заголовок не может быть пустым")
+    @Column(nullable = false)
     private String title;
 
-    @NotBlank(message = "Описание не может быть пустым")
+    @Column(nullable = false)
     private String description;
 
-    @Column(columnDefinition = "TEXT")
-    @NotBlank(message = "Содержание не может быть пустым")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Min(1) @Max(127)
-    private byte time;
+    @Min(1) @Max(150)
+    @Column(nullable = false)
+    private int time;
 
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
     private long views;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post")
     private List<PostImage> images = new ArrayList<>();
 
     public void addImage(PostImage image) {

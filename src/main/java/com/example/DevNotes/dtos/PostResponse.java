@@ -1,7 +1,6 @@
 package com.example.DevNotes.dtos;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public record PostResponse (
         Long id,
@@ -9,7 +8,7 @@ public record PostResponse (
         String title,
         String description,
         String content,
-        byte time,
+        int time,
         LocalDateTime createdAt,
         long views
 ) {}

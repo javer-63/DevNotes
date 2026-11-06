@@ -1,8 +1,6 @@
 package com.example.DevNotes.controllers;
 
-
-import com.example.DevNotes.repos.PostRepo;
-import com.example.DevNotes.utils.PostMapper;
+import com.example.DevNotes.services.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -12,25 +10,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 @RequiredArgsConstructor
 public class AdminController {
-    private final PostRepo postRepo;
-    private final PostMapper postMapper;
 
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
+    private final PostService postService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin")
     public String admin(Model model) {
-        model.addAttribute("posts", postRepo.count());
-        postRepo.findTopByOrderByCreatedAtDesc().map(postMapper::toSummary)
-                .ifPresent(lastPost -> model.addAttribute("lastPost", lastPost));
-        model.addAttribute("topPosts", postRepo.findTop5ByOrderByViewsDesc()
-                .stream()
-                .map(postMapper::toSummary)
-                .toList());
-
+        model.addAttribute("posts", postService.countPosts());
+        model.addAttribute("lastPost", postService.findLast());
+        model.addAttribute("topPosts", postService.findTop5ByViews());
         return "admin-page";
     }
 }

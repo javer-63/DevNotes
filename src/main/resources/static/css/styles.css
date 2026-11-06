@@ -400,7 +400,7 @@ pre {
     text-decoration: none;
 }
 .page-current {
-    color: #ffffff;
+    color: #000000;
     padding: .3rem .65rem;
     border: 1px solid var(--text-strong);
     border-radius: var(--radius);
