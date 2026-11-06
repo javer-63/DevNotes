@@ -1,4 +1,4 @@
-# DevNotes (v1.2.0)
+# DevNotes (v1.3.6)
 
 > ⚙️ **Статус проекта**: разработка
 > 
@@ -16,17 +16,18 @@
 ## 🔧 Ключевые возможности
 
 - Публикация, редактирование и удаление постов
-- Административная панель с контролем доступа
+- Административная панель со статистикой (всего постов, последний пост, топ-5 по просмотрам)
 - Защита маршрутов через Spring Security
 - Авторизация администратора по логину и паролю
 - Отдача изображений по `/images/**`
-- Встроенный WYSIWYG-редактор Trumbowyg для удобного форматирования текста
-- Отображение списка всех постов с пагинацией и SEO-метаданными (canonical, prev/next)
-- Отображение детальной страницы статьи с подсчётом просмотров (защита от накрутки через cookie)
-- Шаблонизация интерфейса с помощью Thymeleaf
-- Централизованная обработка ошибок и исключений
-- Профили Spring — раздельная конфигурация для разработки и продакшена
-- CI/CD — автоматический деплой при пуше в ветку main
+- WYSIWYG-редактор Trumbowyg с загрузкой изображений в текст статьи
+- Привязка изображений к статьям в БД (при удалении статьи — отвязка, затем очистка планировщиком)
+- Отображение списка постов с пагинацией и SEO-метаданными (canonical, prev/next)
+- Подсчёт просмотров статьи через cookie
+- Шаблонизация интерфейса через Thymeleaf
+- Централизованная обработка ошибок
+- Профили Spring: раздельная конфигурация для dev и prod
+- CI/CD — автоматический деплой при пуше в `main`
 
 ---
 
@@ -44,12 +45,13 @@
 - **Lombok** — сокращение boilerplate-кода
 - **Maven** — управление зависимостями и сборка проекта
 - **CI/CD** — автоматический деплой при пуше в GitHub ветку main
+- **Spring Scheduler** — очистка «висящих» изображений раз в сутки
+
 
 ### Frontend
 - **Thymeleaf** — шаблонизатор
-- **HTML5 / CSS** — базовая разметка и стили
-- **Bootstrap 5** — CSS-фреймворк
-- **Trumbowyg** — лёгкий WYSIWYG-редактор контента
+- **HTML5 / CSS** — разметка и стили
+- **Trumbowyg** — WYSIWYG-редактор
 - **jQuery** — требуется для Trumbowyg
 ---
 
@@ -60,22 +62,62 @@ src/
 ├── main/
 │   ├── java/
 │   │   └── com.example.DevNotes/
-│   │       ├── DevNotesApplication.java         # Точка входа - Spring Boot Application
-│   │       ├── configuration/                   # Конфигурация (Security, ImageConfigurer)
+│   │       ├── DevNotesApplication.java         # Точка входа
+│   │       ├── configuration/                   # Security, ImageConfigurer, WebRedirectConfig
 │   │       ├── controllers/                     # HTTP-контроллеры
-│   │       ├── services/                        # Бизнес-логика и сервисные слои
+│   │       │   ├── AdminController.java
+│   │       │   ├── ImageUploadController.java
+│   │       │   ├── MainController.java
+│   │       │   └── PostController.java
+│   │       ├── services/                        # Бизнес-логика
+│   │       │   ├── AuthLoggingHandler.java
+│   │       │   ├── ClientInfoResolver.java
+│   │       │   ├── FileStorageService.java
+│   │       │   ├── ImageCleanupScheduler.java
+│   │       │   ├── ImageService.java
+│   │       │   ├── LocalFileStorageService.java
+│   │       │   ├── PostFormRenderer.java
+│   │       │   ├── PostService.java
+│   │       │   ├── SeoService.java
+│   │       │   └── ViewCounterService.java
 │   │       ├── repos/                           # JPA-репозитории
-│   │       ├── models/                          # Entity-классы (модели)
-│   │       ├── dtos/                            # DTO (PostRequest, PostResponse, PostSummary)
+│   │       │   ├── PostImageRepo.java
+│   │       │   └── PostRepo.java
+│   │       ├── models/                          # Entity-классы
+│   │       │   ├── Post.java
+│   │       │   └── PostImage.java
+│   │       ├── dtos/                            # DTO
+│   │       │   ├── PostRequest.java
+│   │       │   ├── PostResponse.java
+│   │       │   └── PostSummary.java
 │   │       ├── exceptions/                      # Исключения и глобальный обработчик
-│   │       └── utils/                           # Вспомогательные утилиты (PostMapper)
+│   │       │   ├── FileStorageException.java
+│   │       │   ├── GlobalExceptionHandler.java
+│   │       │   ├── PostAlreadyExistsException.java
+│   │       │   └── PostNotFoundException.java
+│   │       └── utils/                           # Вспомогательные утилиты
+│   │           └── PostMapper.java
 │   │
 │   └── resources/
-│       ├── static/                              # Статические ресурсы (CSS, img, JS)
-│       ├── templates/                           # Шаблоны Thymeleaf
-│       ├── application.yml                      # Основной конфигурационный файл (общие настройки)
-│       ├── application-dev.yml                  # Конфигурация для разработки
-│       └── application-prod.yml                 # Конфигурация для продакшена
+│       ├── static/                              # CSS, JS, изображения
+│       │   ├── css/styles.css
+│       │   └── js/editor.js
+│       ├── templates/                           # Thymeleaf-шаблоны
+│       │   ├── fragments/
+│       │   │   ├── head.html
+│       │   │   ├── header.html
+│       │   │   └── footer.html
+│       │   ├── admin-page.html
+│       │   ├── edit-post.html
+│       │   ├── login.html
+│       │   ├── main.html
+│       │   ├── new-post.html
+│       │   ├── post.html
+│       │   ├── post-not-found.html
+│       │   └── posts.html
+│       ├── application.yaml                     # Общие настройки
+│       ├── application-dev.yaml                 # Профиль dev
+│       └── application-prod.yaml                # Профиль prod
 ```
 
 ---
@@ -95,6 +137,7 @@ src/
 | `/posts/{url}/edit`          | Форма редактирования поста                    | Только администратор   |
 | `POST /posts/{url}/edit`     | Обновление существующего поста                | Только администратор   |
 | `POST /posts/{url}/delete`   | Удаление поста                                | Только администратор   |
+| `POST /api/images/upload`    | Загрузка изображения (Trumbowyg)              | Только администратор   |
 | `/images/{filename}`         | Получение файла изображения                   | Все пользователи       |
 | `/actuator/health`           | Health-check                                  | Все пользователи       |
 | `/actuator/**`               | Остальные actuator-эндпоинты                  | Только администратор   |
@@ -111,16 +154,12 @@ src/
 - **Maven**
 - **PostgreSQL** (только для продакшена)
 
----
-
 ### 2. Клонирование репозитория
 
 ```bash
 git clone https://github.com/javer-63/DevNotes
 cd DevNotes
 ```
-
----
 
 ### 3. Настройка конфигурации
 
@@ -147,8 +186,6 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 
 #### 🚀 Режим продакшена (prod)
 
-Для продакшена требуется PostgreSQL.
-
 1. Создайте базу данных:
 ```sql
 CREATE DATABASE devnotes;
@@ -164,11 +201,14 @@ export ADMIN_PASSWORD=your_admin_password
 ```
 
 3. Запустите приложение:
+
+**Через Maven:**
 ```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=prod
 ```
 
-Или через JAR:
+**Или через JAR:**
+
 ```bash
 mvn clean package
 java -jar target/devnotes.jar --spring.profiles.active=prod
@@ -208,11 +248,9 @@ uploads/images/
 DevNotes использует встроенную поддержку Logback через Spring Boot для централизованного и гибкого логирования событий приложения.
 Все логи записываются как в консоль, так и в файл `app.log`, расположенный в корне проекта. Формат сообщений:
 
-```log
+```
 2026-05-14 12:30:45 INFO PostController: Пост с URL xxx не найден
 ```
-
-Основной файл: **app.log** — текущий активный лог.
 
 Ротация логов:
 - При достижении размера 10 МБ файл архивируется.
