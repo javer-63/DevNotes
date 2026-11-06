@@ -18,10 +18,8 @@ public class ImageUploadController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/upload")
-    public ResponseEntity<Map<String, Object>> upload(@RequestParam("file") MultipartFile file,
-                                                      @RequestParam(value = "postId", required = false) Long postId) {
-
-        String fileName = imageService.upload(file, postId);
+    public ResponseEntity<Map<String, Object>> upload(@RequestParam("file") MultipartFile file) {
+        String fileName = imageService.upload(file);
         return ResponseEntity.ok(Map.of("success", true, "url", "/images/" + fileName));
     }
 }
